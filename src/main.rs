@@ -106,12 +106,16 @@ async fn graphql_handler(schema: Extension<MySchema>, req: GraphQLRequest) -> Gr
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let db = Surreal::new::<Ws>(dotenv!("SURREALDB_URL")).await?;
+
     db.signin(Root {
         username: dotenv!("SURREALDB_USERNAME"),
         password: dotenv!("SURREALDB_PASSWORD"),
     })
     .await?;
-    db.use_ns("test").use_db("test").await?;
+
+    db.use_ns(dotenv!("SURREALDB_NS"))
+        .use_db(dotenv!("SURREALDB_DATABASE"))
+        .await?;
 
     let schema = Schema::build(Query, EmptyMutation, EmptySubscription)
         .data(db)
@@ -122,6 +126,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .layer(Extension(schema));
 
     let addr = dotenv!("API_LISTEN_ON");
+
     Server::bind(&addr.parse().unwrap())
         .serve(app.into_make_service())
         .await
