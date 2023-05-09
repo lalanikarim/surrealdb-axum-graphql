@@ -2,7 +2,7 @@ mod graphql;
 
 use std::error::Error;
 
-use async_graphql::{http::GraphiQLSource, EmptyMutation, EmptySubscription, Schema};
+use async_graphql::{http::GraphiQLSource, EmptySubscription, Schema};
 use async_graphql_axum::{GraphQLRequest, GraphQLResponse};
 use axum::{
     response::{self, IntoResponse},
@@ -10,8 +10,8 @@ use axum::{
     Extension, Router, Server,
 };
 
-use graphql::queries::root_query::RootQuery;
 use graphql::schema::MySchema;
+use graphql::{mutations::root_mutation::RootMutation, queries::root_query::RootQuery};
 
 use surrealdb::{engine::remote::ws::Ws, opt::auth::Root, Surreal};
 
@@ -40,7 +40,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .use_db(dotenv!("SURREALDB_DATABASE"))
         .await?;
 
-    let schema = Schema::build(RootQuery, EmptyMutation, EmptySubscription)
+    let schema = Schema::build(RootQuery, RootMutation, EmptySubscription)
         .data(db)
         .finish();
 

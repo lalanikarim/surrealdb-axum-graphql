@@ -1,5 +1,5 @@
-use async_graphql::{EmptyMutation, EmptySubscription, Schema};
+use async_graphql::{EmptySubscription, Schema};
 
-use super::queries::root_query::RootQuery;
+use super::{mutations::root_mutation::RootMutation, queries::root_query::RootQuery};
 
-pub type MySchema = Schema<RootQuery, EmptyMutation, EmptySubscription>;
+pub type MySchema = Schema<RootQuery, RootMutation, EmptySubscription>;
