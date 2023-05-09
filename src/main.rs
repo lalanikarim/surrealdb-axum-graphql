@@ -17,6 +17,9 @@ use surrealdb::{
     Surreal,
 };
 
+#[macro_use]
+extern crate dotenv_codegen;
+
 type MySchema = Schema<crate::Query, EmptyMutation, EmptySubscription>;
 
 #[derive(Debug, Deserialize, InputObject)]
@@ -102,10 +105,10 @@ async fn graphql_handler(schema: Extension<MySchema>, req: GraphQLRequest) -> Gr
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let db = Surreal::new::<Ws>("localhost:8000").await?;
+    let db = Surreal::new::<Ws>(dotenv!("SURREALDB_URL")).await?;
     db.signin(Root {
-        username: "root",
-        password: "root",
+        username: dotenv!("SURREALDB_USERNAME"),
+        password: dotenv!("SURREALDB_PASSWORD"),
     })
     .await?;
     db.use_ns("test").use_db("test").await?;
@@ -118,7 +121,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .route("/", get(graphiql).post(graphql_handler))
         .layer(Extension(schema));
 
-    Server::bind(&"127.0.0.1:8000".parse().unwrap())
+    let addr = dotenv!("API_LISTEN_ON");
+    Server::bind(&addr.parse().unwrap())
         .serve(app.into_make_service())
         .await
         .unwrap();
