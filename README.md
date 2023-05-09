@@ -8,6 +8,6 @@ This project explores a potential approach to creating GraphQL api backed by Sur
 
 # Launching
 
-A `docker-compose.yml` file is included along with `.env.example` file.  
+A [docker-compose.yml](https://github.com/lalanikarim/surrealdb-axum-graphql/blob/main/docker-compose.yml) file is included along with [.env.example](https://github.com/lalanikarim/surrealdb-axum-graphql/blob/main/.env.example) file.  
 Rename the `.env.example` to `.env` and launch in a container locally using `docker-compose up`.
 
